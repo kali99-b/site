@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Controle de Vídeo</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        text-align: center;
+        padding: 40px;
+    }
+    video {
+        width: 500px;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    #mensagem {
+        font-size: 18px;
+        margin-top: 20px;
+        color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vídeo Exclusivo</h1>
+
+  <div id="conteudo-video">
+    <video id="video" controls>
+      <source src="videos/cafe.mp4" type="video/mp4">
+      Seu navegador não suporta o vídeo.
+    </video>
+  </div>
+
+  <div id="mensagem"></div>
+
+  <script>
+    const video = document.getElementById("video");
+    const conteudo = document.getElementById("conteudo-video");
+    const mensagem = document.getElementById("mensagem");
+
+    if (localStorage.getItem("videoAssistido") === "true") {
+      conteudo.innerHTML = "<p>Este vídeo já foi assistido neste navegador e não está mais disponível.</p>";
+    } else {
+      video.addEventListener("ended", function () {
+        localStorage.setItem("videoAssistido", "true");
+        mensagem.innerText = "Obrigado por assistir. O vídeo não estará mais disponível no próximo acesso.";
+      });
+    }
+  </script>
+
+</body>
+</html>
