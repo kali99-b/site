@@ -9,44 +9,97 @@
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
         text-align: center;
-        padding: 40px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        box-sizing: border-box;
+        margin: 0;
     }
+
     video {
-        width: 500px;
+        width: 100%;
+        max-width: 500px;
         border-radius: 8px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: opacity 0.5s ease;
     }
+
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
     #mensagem {
-        font-size: 18px;
+        font-size: 1rem;
         margin-top: 20px;
         color: red;
+        max-width: 90%;
+    }
+
+    @media (max-width: 600px) {
+        h1 {
+            font-size: 1.4rem;
+        }
+        #mensagem {
+            font-size: 0.95rem;
+        }
     }
   </style>
 </head>
 <body>
 
-  <h1>Vídeo Exclusivo</h1>
+  <h1>🟢Online agora</h1>
 
-  <div id="conteudo-video">
-    <video id="video" controls>
-      <source src="videos/cafe.mp4" type="video/mp4">
-      Seu navegador não suporta o vídeo.
-    </video>
-  </div>
+  <div id="conteudo-video"></div>
 
   <div id="mensagem"></div>
 
   <script>
-    const video = document.getElementById("video");
     const conteudo = document.getElementById("conteudo-video");
     const mensagem = document.getElementById("mensagem");
 
-    if (localStorage.getItem("videoAssistido") === "true") {
-      conteudo.innerHTML = "<p>Este vídeo já foi assistido neste navegador e não está mais disponível.</p>";
+    const tempoExpiracaoMs = 24 * 60 * 60 * 1000; // 24 horas
+    const agora = new Date().getTime();
+    const assistidoEm = localStorage.getItem("videoAssistidoEm");
+
+    if (assistidoEm && agora - parseInt(assistidoEm) < tempoExpiracaoMs) {
+      conteudo.innerHTML = "<p>Este vídeo já foi assistido e estará disponível novamente após 24 horas.</p>";
     } else {
-      video.addEventListener("ended", function () {
-        localStorage.setItem("videoAssistido", "true");
-        mensagem.innerText = "Obrigado por assistir. O vídeo não estará mais disponível no próximo acesso.";
+      conteudo.innerHTML = `
+        <video id="video" autoplay playsinline muted controlsList="nodownload">
+          <source src="videos/cafe.mp4" type="video/mp4">
+          Seu navegador não suporta o vídeo.
+        </video>
+      `;
+
+      const video = document.getElementById("video");
+      let jaIniciado = false;
+
+      // Reproduzir apenas uma vez quando o vídeo estiver pronto
+      video.addEventListener("canplay", () => {
+        if (!jaIniciado) {
+          jaIniciado = true;
+          video.play().catch(error => {
+            console.log("Autoplay pode estar bloqueado até interação do usuário.");
+          });
+        }
+      });
+
+      // Ativar som com clique
+      video.addEventListener("click", () => {
+        if (video.muted) {
+          video.muted = false;
+          video.play();
+        }
+      });
+
+      // Armazenar data de visualização ao fim do vídeo
+      video.addEventListener("ended", () => {
+        localStorage.setItem("videoAssistidoEm", new Date().getTime().toString());
+        mensagem.innerText = "Obrigado por assistir.";
       });
     }
   </script>
