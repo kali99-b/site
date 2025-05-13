@@ -66,7 +66,7 @@
     const assistidoEm = localStorage.getItem("videoAssistidoEm");
 
     if (assistidoEm && agora - parseInt(assistidoEm) < tempoExpiracaoMs) {
-      conteudo.innerHTML = "<p>Este vídeo já foi assistido e estará disponível novamente após 24 horas.</p>";
+      conteudo.innerHTML = "<p>Obrigada por assistir tomara que tenha gostado.</p>";
     } else {
       conteudo.innerHTML = `
         <video id="video" autoplay playsinline muted controlsList="nodownload">
